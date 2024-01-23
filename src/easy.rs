@@ -1,33 +1,23 @@
 struct Solution;
 
 impl Solution {
-    pub fn maximum_swap(num: i32) -> i32 {
-        let mut digits = num
-            .to_string()
-            .chars()
-            .enumerate()
-            .collect::<Vec<(usize, char)>>();
-        digits.sort_by_key(|x| (x.1 as u8, x.0));
-        let mut res = num.to_string().chars().collect::<Vec<char>>();
-        let mut t = '0';
-        let mut m = '0';
-        for i in 0..digits.len() {
-            if res[i] != digits[digits.len() - i - 1].1 {
-                //res.swap(i, digits[digits.len() - i - 1].0);
-                t = res[i];
-                m = digits[digits.len() - i - 1].1;
-                res[i] = digits[digits.len() - i - 1].1;
-                break;
+    pub fn alternating_subarray(nums: Vec<i32>) -> i32 {
+        let mut res = -1;
+        let (mut l, mut r) = (0, 1);
+        while r < nums.len() {
+            if r - l == 1 && nums[r] - nums[l] != 1 {
+                r += 1;
+                l += 1;
+                continue;
             }
-        }
-        for i in (0..digits.len()).rev() {
-            if res[i] == m {
-                res[i] = t;
-                break;
+            if r - l >= 2 && nums[r] != nums[r - 2] {
+                l = r - 1;
+                continue;
             }
+            res = res.max((r - l + 1) as i32);
+            r += 1;
         }
-
-        res.iter().collect::<String>().parse().unwrap()
+        return res;
     }
 }
 
@@ -37,7 +27,7 @@ mod test {
 
     #[test]
     fn test1() {
-        let res = Solution::maximum_swap(98368);
-        assert_eq!(res, 98863);
+        let res = Solution::alternating_subarray(vec![14, 30, 29, 49, 3, 23, 44, 21, 26, 52]);
+        assert_eq!(res, -1);
     }
 }
