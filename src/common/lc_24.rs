@@ -1,5 +1,7 @@
 struct Solution;
 
+// 动态区间中位数
+
 impl Solution {
     pub fn nums_game(nums: Vec<i32>) -> Vec<i32> {
         use std::cmp::Reverse;
