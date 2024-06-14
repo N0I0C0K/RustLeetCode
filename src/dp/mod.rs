@@ -4,6 +4,7 @@ mod lc_1726;
 mod lc_1911;
 mod lc_2003;
 mod lc_2530;
+mod lc_2786;
 mod lc_2865;
 mod lc_3040;
 mod lc_312;

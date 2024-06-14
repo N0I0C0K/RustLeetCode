@@ -1,17 +1,26 @@
 struct Solution;
 
 impl Solution {
-    pub fn max_operations(nums: Vec<i32>) -> i32 {
-        let n = nums[0] + nums[1];
-        let mut res = 1;
-        let l = nums.len();
-        for i in (2..l).step_by(2) {
-            if i < l - 1 && nums[i] + nums[i + 1] == n {
+    pub fn num_rescue_boats(mut people: Vec<i32>, limit: i32) -> i32 {
+        let n = people.len();
+        people.sort_unstable_by(|a, b| b.cmp(a));
+        let mut l = 0_usize;
+        let mut r = n - 1;
+        let mut res = 0;
+        while l < r && l < n {
+            if people[l] + people[r] > limit {
+                l += 1;
                 res += 1;
-            } else {
-                break;
+                continue;
             }
+            res += 1;
+            l += 1;
+            r -= 1;
         }
+        if l == r {
+            res += 1;
+        }
+
         res
     }
 }
@@ -22,8 +31,14 @@ mod test {
 
     #[test]
     fn test1() {
-        let nums = vec![3, 2, 1, 4, 5];
-        let res = Solution::max_operations(nums);
-        assert_eq!(res, 2);
+        let people = vec![1, 2];
+        let res = Solution::num_rescue_boats(people, 3);
+        assert_eq!(res, 1)
+    }
+    #[test]
+    fn test2() {
+        let people = vec![3, 2, 2, 1];
+        let res = Solution::num_rescue_boats(people, 3);
+        assert_eq!(res, 3)
     }
 }
