@@ -7,6 +7,7 @@ mod lc_2530;
 mod lc_2786;
 mod lc_2865;
 mod lc_3040;
+mod lc_3101;
 mod lc_312;
 mod lc_410;
 mod lc_514;
