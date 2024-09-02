@@ -1,61 +1,39 @@
 struct Solution;
 
 impl Solution {
-    fn get_sum_by_val(val: i64, x: i32) -> i64 {
-        let mut res = 0_i64;
-        for i in 0..64 {
-            if (1 << i) > val {
-                break;
+    fn check_c(chs: &Vec<char>, k: i32, t: char) -> i32 {
+        let (mut l, mut r) = (0, 0);
+        let mut res: i32 = 0;
+        let mut cnt: i32 = 0;
+        while r < chs.len() {
+            if chs[r] == 'F' {
+                cnt += 1;
             }
-            if (i + 1) % x == 0 {
-                let k = 1 << (i + 1);
-                res += (val + 1) / k * k / 2;
-                let m = (val + 1) % k - k / 2;
-                res += m.max(0);
+            while cnt > k && l < r {
+                if chs[l] == t {
+                    cnt -= 1;
+                }
+                l += 1;
             }
+            r += 1;
+            res = res.max((r - l) as _);
         }
-        res
+
+        return res;
     }
 
-    pub fn find_maximum_number(k: i64, x: i32) -> i64 {
-        let mut l = 0_i64;
-        let mut r = 1e3 as i64;
-        while l < r {
-            let mid = l + (r - l) / 2;
-            let t = Solution::get_sum_by_val(mid, x);
-            if r - l == 1 {
-                break;
-            }
-            if t > k {
-                r = mid;
-            } else {
-                l = mid;
-            }
-        }
-        l
+    pub fn max_consecutive_answers(answer_key: String, k: i32) -> i32 {
+        //use std::collections::VecDeque;
+        let chs = answer_key.chars().collect::<Vec<char>>();
+        return Solution::check_c(&chs, k, 'T').max(Solution::check_c(&chs, k, 'F'));
     }
 }
-
 #[cfg(test)]
 mod test {
     use super::Solution;
 
     #[test]
-    fn test_get_sum() {
-        assert_eq!(Solution::get_sum_by_val(6, 1), 9);
-        assert_eq!(Solution::get_sum_by_val(7, 1), 12);
-        assert_eq!(Solution::get_sum_by_val(6, 2), 3)
-    }
-
-    #[test]
     fn test() {
-        let sol = Solution::find_maximum_number(9, 1);
-        assert_eq!(sol, 6);
-    }
-
-    #[test]
-    fn test1() {
-        let sol = Solution::find_maximum_number(7, 2);
-        assert_eq!(sol, 9);
+        assert_eq!(Solution::min_end(2, 7), 15);
     }
 }
