@@ -1,31 +1,54 @@
 struct Solution;
 
 impl Solution {
-    fn check_c(chs: &Vec<char>, k: i32, t: char) -> i32 {
-        let (mut l, mut r) = (0, 0);
-        let mut res: i32 = 0;
-        let mut cnt: i32 = 0;
-        while r < chs.len() {
-            if chs[r] == 'F' {
-                cnt += 1;
-            }
-            while cnt > k && l < r {
-                if chs[l] == t {
-                    cnt -= 1;
+    pub fn sorted_squares(nums: Vec<i32>) -> Vec<i32> {
+        let mut res = vec![];
+        let min_idx = nums
+            .iter()
+            .enumerate()
+            .min_by_key(|(idx, x)| x.abs())
+            .unwrap()
+            .0;
+        let len = nums.len();
+        let mut l = Some(min_idx);
+        let mut r = if min_idx < len - 1 {
+            Some(min_idx + 1)
+        } else {
+            None
+        };
+        let mut choose_l = false;
+        while l.is_some() || r.is_some() {
+            if l.is_none() {
+                res.push(nums[r.unwrap()] * nums[r.unwrap()]);
+                choose_l = false;
+            } else if r.is_none() {
+                res.push(nums[l.unwrap()] * nums[l.unwrap()]);
+                choose_l = true;
+            } else {
+                if nums[l.unwrap()].abs() <= nums[r.unwrap()].abs() {
+                    res.push(nums[l.unwrap()] * nums[l.unwrap()]);
+                    choose_l = true;
+                } else {
+                    res.push(nums[r.unwrap()] * nums[r.unwrap()]);
+                    choose_l = false;
                 }
-                l += 1;
             }
-            r += 1;
-            res = res.max((r - l) as _);
+            if choose_l {
+                l = if l == Some(0) {
+                    None
+                } else {
+                    Some(l.unwrap() - 1)
+                }
+            } else {
+                r = if r == Some(len - 1) {
+                    None
+                } else {
+                    Some(r.unwrap() + 1)
+                }
+            }
         }
 
-        return res;
-    }
-
-    pub fn max_consecutive_answers(answer_key: String, k: i32) -> i32 {
-        //use std::collections::VecDeque;
-        let chs = answer_key.chars().collect::<Vec<char>>();
-        return Solution::check_c(&chs, k, 'T').max(Solution::check_c(&chs, k, 'F'));
+        res
     }
 }
 #[cfg(test)]
