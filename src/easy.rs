@@ -1,54 +1,71 @@
 struct Solution;
 
 impl Solution {
-    pub fn sorted_squares(nums: Vec<i32>) -> Vec<i32> {
-        let mut res = vec![];
-        let min_idx = nums
-            .iter()
-            .enumerate()
-            .min_by_key(|(idx, x)| x.abs())
-            .unwrap()
-            .0;
-        let len = nums.len();
-        let mut l = Some(min_idx);
-        let mut r = if min_idx < len - 1 {
-            Some(min_idx + 1)
-        } else {
-            None
-        };
-        let mut choose_l = false;
-        while l.is_some() || r.is_some() {
-            if l.is_none() {
-                res.push(nums[r.unwrap()] * nums[r.unwrap()]);
-                choose_l = false;
-            } else if r.is_none() {
-                res.push(nums[l.unwrap()] * nums[l.unwrap()]);
-                choose_l = true;
-            } else {
-                if nums[l.unwrap()].abs() <= nums[r.unwrap()].abs() {
-                    res.push(nums[l.unwrap()] * nums[l.unwrap()]);
-                    choose_l = true;
+    pub fn maximize_win(prize_positions: Vec<i32>, k: i32) -> i32 {
+        let len = prize_positions.len();
+        if len == 1 {
+            return 1;
+        }
+        let lower_bound = |x: i32| -> usize {
+            let mut l = 0;
+            let mut r = len;
+            while l < r {
+                let m = l + (r - l) / 2;
+                if prize_positions[m] <= x {
+                    l = m;
                 } else {
-                    res.push(nums[r.unwrap()] * nums[r.unwrap()]);
-                    choose_l = false;
+                    r = m;
+                }
+                if r - l == 1 {
+                    break;
                 }
             }
-            if choose_l {
-                l = if l == Some(0) {
-                    None
+            l
+        };
+
+        let upper_bound = |x: i32| -> usize {
+            let mut l = 0;
+            let mut r = len;
+            while l < r {
+                let m = l + (r - l) / 2;
+                if prize_positions[m] >= x {
+                    r = m;
                 } else {
-                    Some(l.unwrap() - 1)
+                    l = m;
                 }
+                if r - l == 1 {
+                    break;
+                }
+            }
+            if prize_positions[l] >= x {
+                l
             } else {
-                r = if r == Some(len - 1) {
-                    None
-                } else {
-                    Some(r.unwrap() + 1)
-                }
+                r
+            }
+        };
+
+        let mut lmax = vec![0; len];
+        for i in 0..len {
+            let t = upper_bound(prize_positions[i] - k);
+            lmax[i] = (i - t + 1) as i32;
+            if i > 0 {
+                lmax[i] = lmax[i].max(lmax[i - 1]);
             }
         }
 
-        res
+        let mut rmax = vec![0; len];
+        for i in (0..len).rev() {
+            let t = lower_bound(prize_positions[i] + k);
+            rmax[i] = (t + 1 - i) as i32;
+            if i < len - 1 {
+                rmax[i] = rmax[i].max(rmax[i + 1]);
+            }
+        }
+
+        (0..len - 1)
+            .map(|idx| lmax[idx] + rmax[idx + 1])
+            .max()
+            .unwrap()
     }
 }
 #[cfg(test)]
@@ -57,6 +74,6 @@ mod test {
 
     #[test]
     fn test() {
-        assert_eq!(Solution::min_end(2, 7), 15);
+        assert_eq!(Solution::maximize_win(vec![1, 1, 2, 2, 3, 3, 5], 2), 7);
     }
 }
